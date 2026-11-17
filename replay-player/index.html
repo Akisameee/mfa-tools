@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Replay</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <main id="screen">
+      <section id="left">
+        <div id="board-wrap">
+          <canvas id="board"></canvas>
+          <canvas id="board-effects" aria-hidden="true"></canvas>
+        </div>
+        <footer id="progress">
+          <section id="completion" aria-label="进度">
+            <div class="progress-heading">
+              <span>进度</span>
+              <div
+                id="completion-bar"
+                class="summary-bar"
+                role="progressbar"
+                aria-label="通过进度"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+              >
+                <span class="bar-segment correct"></span>
+              </div>
+              <div class="progress-legend" aria-label="进度图例">
+                <span><i class="legend-swatch unknown"></i>未通过</span>
+                <span><i class="legend-swatch correct"></i>通过</span>
+              </div>
+            </div>
+            <div class="completion-groups">
+              <section
+                class="progress-group"
+                id="texts"
+                title="可读完的文本页面；根据录制中的 win 标记（目录条目变暗）确认完成"
+              >
+                <div class="metric">
+                  <span>文本</span><span class="metric-count"><b>0</b><span class="metric-slash">/</span><small></small></span>
+                </div>
+                <div class="tiles" aria-label="文本阅读进度"></div>
+              </section>
+              <section
+                class="progress-group"
+                id="questions"
+                title="按录制页面中出现的 win 标记确认完成；灰色表示尚未确认"
+              >
+                <div class="metric">
+                  <span>题目</span><span class="metric-count"><b>0</b><span class="metric-slash">/</span><small></small></span>
+                </div>
+                <div class="tiles" aria-label="题目完成进度"></div>
+              </section>
+              <section
+                class="progress-group"
+                id="games"
+                title="按录制页面中出现的 win 标记确认完成；灰色表示尚未确认"
+              >
+                <div class="metric">
+                  <span>游戏</span><span class="metric-count"><b>0</b><span class="metric-slash">/</span><small></small></span>
+                </div>
+                <div class="tiles" aria-label="小游戏完成进度"></div>
+              </section>
+            </div>
+          </section>
+          <section
+            class="progress-group"
+            id="words"
+            title="游戏词表中的可标注文字；绿色仅表示已有标注，不判断对错"
+          >
+            <div class="progress-heading">
+              <div class="metric">
+                <span>文字</span><span><b>0</b><small></small></span>
+              </div>
+              <div
+                id="words-bar"
+                class="summary-bar"
+                role="progressbar"
+                aria-label="文字标注进度"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+              >
+                <span class="bar-segment correct"></span>
+                <span class="bar-segment close"></span>
+                <span class="bar-segment incorrect"></span>
+              </div>
+              <div
+                class="progress-legend"
+                aria-label="文字图例"
+                title="当前仅记录是否标注，错误、接近、正确的评分尚未接入"
+              >
+                <span><i class="legend-swatch unknown"></i>未标注</span>
+                <span><i class="legend-swatch incorrect"></i>错误</span>
+                <span><i class="legend-swatch close"></i>接近</span>
+                <span><i class="legend-swatch correct"></i>正确</span>
+              </div>
+            </div>
+            <div class="tiles" id="heatmap" aria-label="文字标注进度"></div>
+          </section>
+        </footer>
+      </section>
+      <aside id="conversation" aria-label="模型对话">
+        <div class="clock-bar">
+          <div class="clock-readout">
+          <time
+            id="elapsed"
+            aria-label="录制时间"
+            title="包含思考和工具调用，已移除回合结束后等待用户继续的时间"
+            >00:00:00.000</time
+          >
+          <span id="playback-speed">8×</span>
+          </div>
+          <input
+            id="playback-position"
+            type="range"
+            min="0"
+            max="10000"
+            step="1"
+            value="0"
+            aria-label="播放进度"
+            title="点击或拖动跳转"
+          />
+          <div class="playback-actions">
+            <div class="transport" role="group" aria-label="播放控制">
+              <button
+                type="button"
+                data-command="previous"
+                title="上一步（←）"
+                aria-label="上一步"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M12 5 7 10 12 15" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-command="toggle"
+                id="toggle"
+                title="播放（空格）"
+                aria-label="播放"
+                aria-pressed="false"
+              >
+                <svg class="icon-play" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="m7 4 8 6-8 6Z" fill="currentColor" stroke="none" />
+                </svg>
+                <svg class="icon-pause" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M7 4v12M13 4v12" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-command="next"
+                title="下一步（→）"
+                aria-label="下一步"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="m8 5 5 5-5 5" />
+                </svg>
+              </button>
+            </div>
+            <select
+              id="speed"
+              aria-label="思考倍速"
+              title="只调整思考等待速度，操作时长固定"
+            >
+              <option value="rec" id="automatic-speed">rec</option>
+              <option value="0.5">0.5×</option>
+              <option value="1">1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+              <option value="8" selected>8×</option>
+              <option value="16">16×</option>
+              <option value="32">32×</option>
+            </select>
+          </div>
+        </div>
+        <div id="conversation-scroll"><div id="chat"></div></div>
+      </aside>
+    </main>
+    <div id="loading">正在读取录制…</div>
+    <script type="module" src="src/app.mjs"></script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+# Private recordings, saves, extracted game data, and local investigations
+/recordings/
+/artifacts/
+/re/
+/workspace/
+notes.json
+*.sav
+*.sav.*
+.frida-tmp/
+
+# Local credentials (keep distributable examples)
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.pypirc
+.netrc
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python environments, builds, and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+
+# Node dependencies and generated coverage
+node_modules/
+.npm/
+.cache/
+coverage/
+
+# Logs, temporary files, and local dump/backup files
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
+/look*.txt
+/*.tsv
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,5 @@
+# Package-local runtime data. Shared cache/build rules live in ../.gitignore.
+/recordings/
+/notes.json
+/look*.txt
+/*.tsv

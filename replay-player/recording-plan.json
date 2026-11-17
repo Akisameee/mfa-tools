@@ -1,0 +1,22 @@
+{
+  "name": "rec",
+  "recording": "1115",
+  "defaultSpeed": 1,
+  "changes": [
+    {
+      "afterMessage": { "role": "assistant", "occurrence": 1 },
+      "afterReveal": true,
+      "speed": 8
+    },
+    { "at": "00:36:02.746", "speed": 32 },
+    { "at": "00:41:42.275", "speed": 8 },
+    { "at": "03:05:34.979", "speed": 32 },
+    {
+      "afterMessage": {
+        "role": "user",
+        "text": "好，现在使用游戏内的书写页面模仿外星来信的格式给外星人写一封回信"
+      },
+      "speed": 4
+    }
+  ]
+}

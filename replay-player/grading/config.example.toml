@@ -1,0 +1,23 @@
+# Copy this to config.toml, or edit the pre-created local config.toml.
+# An OpenAI-compatible Chat Completions endpoint is expected.
+# Example: https://api.openai.com/v1 or your provider's compatible base URL.
+base_url = ""
+model = ""
+
+# Environment variable takes priority over api_key. This file is an example;
+# put a literal key only in the ignored config.toml, never here.
+api_key_env = "GRADING_API_KEY"
+api_key = ""
+
+batch_size = 12
+concurrency = 2
+timeout_seconds = 120
+retry_attempts = 3
+json_mode = true
+
+# Optional provider-specific Chat Completions parameters; forwarded as-is.
+# Model, messages, stream, and n are managed by the script.
+[request]
+# max_completion_tokens = 4096  # Models accepting this OpenAI parameter
+# max_tokens = 4096             # Providers accepting max_tokens instead
+# temperature = 0

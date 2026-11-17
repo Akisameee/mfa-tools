@@ -1,0 +1,148 @@
+{
+  "instructions": "Message From Aliens is a game about deciphering a pictographic alien language. Each alien character is represented by a four-character hash, displayed as hash:annotation. Hashes identify the same character across pages within the current connection. Use `look` to inspect the current page, `glyph` to examine character shapes, `click` to interact, `note` to make annotations, `wait` to advance game time, and `launch_game` to start the game.",
+  "tools": [
+    {
+      "name": "launch_game",
+      "description": "Start the game through Steam, or connect to an existing instance.\n\n    Waits up to 45 seconds for a readable page.\n    ",
+      "inputSchema": {
+        "properties": {},
+        "title": "launch_gameArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "look",
+      "description": "Read the current page as a table or screenshot.\n\n    type='table' (default): a 9x24 grid with current annotations and layout markers.\n    Rows 0..8 run top to bottom; columns 0..23 run left to right.\n    Single-cell frames use [...]. Multirow frames use top corners ┌...┐,\n    middle sides │...│, and bottom corners └...┘; empty slots keep their outlines.\n    type='screenshot': an original-resolution game-window PNG with pixel dimensions\n    and window style, useful for colors, setting selections, and size.\n    Each mode compares with its own previous result and returns a short unchanged\n    message when identical. force=True always returns the complete selected view.\n    ",
+      "inputSchema": {
+        "properties": {
+          "type": {
+            "default": "table",
+            "enum": [
+              "table",
+              "screenshot"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "force": {
+            "default": false,
+            "title": "Force",
+            "type": "boolean"
+          }
+        },
+        "title": "lookArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "click",
+      "description": "Click a cell, including a blank cell, on the current grid in the background.\n\n    type='left' (default) or 'right' selects the mouse button.\n    Returns the clicked target, outcome, and any special circumstances.\n    ",
+      "inputSchema": {
+        "properties": {
+          "row": {
+            "title": "Row",
+            "type": "integer"
+          },
+          "col": {
+            "title": "Col",
+            "type": "integer"
+          },
+          "type": {
+            "default": "left",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "row",
+          "col"
+        ],
+        "title": "clickArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "note",
+      "description": "Set an annotation for a character, including one not on the current page.\n\n    Applies to all occurrences of that character across pages.\n    text is one line of at most 49 UTF-16 units; an empty string clears the annotation.\n    ",
+      "inputSchema": {
+        "properties": {
+          "hash": {
+            "title": "Hash",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "hash",
+          "text"
+        ],
+        "title": "noteArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "wait",
+      "description": "Advance game time without actually waiting.\n\n    seconds is 0.001..86400 per call, measured in real-world seconds.\n    Available only on pages that support time advancement.\n    Applies the game's normal time updates and saves the result.\n    ",
+      "inputSchema": {
+        "properties": {
+          "seconds": {
+            "title": "Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "seconds"
+        ],
+        "title": "waitArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "waitOutput",
+        "type": "object"
+      }
+    },
+    {
+      "name": "glyph",
+      "description": "Return a character's shape in the selected format.\n\n    format='image' (default): a 64x64 PNG image with bold, antialiased strokes.\n    format='ascii': adaptive character art using spaces and #.\n    format='paths': JSON polylines fitted proportionally into 0..100 coordinates,\n    with a top-left origin, x right and y down. Connect consecutive points within\n    each path; a repeated first point closes it. Separate paths are not connected.\n    ",
+      "inputSchema": {
+        "properties": {
+          "hash": {
+            "title": "Hash",
+            "type": "string"
+          },
+          "format": {
+            "default": "image",
+            "enum": [
+              "ascii",
+              "paths",
+              "image"
+            ],
+            "title": "Format",
+            "type": "string"
+          }
+        },
+        "required": [
+          "hash"
+        ],
+        "title": "glyphArguments",
+        "type": "object"
+      }
+    }
+  ]
+}

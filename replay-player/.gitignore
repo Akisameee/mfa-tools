@@ -1,0 +1,17 @@
+# Generated playback data: recorded states, grading results, glyph atlas, fonts
+# Anchor this rule so tools/data/ remains versioned source code.
+/data/
+
+# Exported videos, covers, recordings, and diagnostic images
+/exports/
+/renders/
+/artifacts/
+
+# HyperFrames runtime state and generated composition wrappers
+/.hyperframes/
+/hyperframes.html
+/hyperframes-player.html
+
+# Real API settings; grading/config.example.toml stays in version control
+/grading/config.toml
+/grading/config.local.toml
