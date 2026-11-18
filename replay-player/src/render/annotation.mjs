@@ -1,7 +1,6 @@
 import { characters } from "../core/motion.mjs";
 
-export const TEXT_FONT =
-  '"Replay PT Sans", "Replay FZ Hei", "Microsoft YaHei", sans-serif';
+const TEXT_FONT = '"Microsoft YaHei", sans-serif';
 const layoutCaches = new WeakMap();
 
 export function annotationLayout(ctx, text, width = 0.94, height = 0.46) {

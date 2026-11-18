@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "message-from-aliens-mcp"
-version = "0.1.10"
+version = "0.1.11"
 description = "MCP server for reading, clicking, annotating, and inspecting glyphs in Message From Aliens"
 readme = "README.md"
 requires-python = ">=3.10"

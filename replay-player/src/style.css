@@ -1,19 +1,5 @@
-/* @font-face {
-  font-family: "Replay PT Sans";
-  src: url("../data/fonts/pt-sans-regular.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-}
-@font-face {
-  font-family: "Replay FZ Hei";
-  src: url("../data/fonts/fz-hei.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-} */
 :root {
-  --font-text: "Replay PT Sans", "Replay FZ Hei", "Microsoft YaHei", sans-serif;
+  --font-text: "Microsoft YaHei", sans-serif;
   color-scheme: dark;
   --bg: #080a0c;
   --panel: #101317;

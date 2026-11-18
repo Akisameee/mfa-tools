@@ -42,10 +42,6 @@ export async function loadReplay() {
   }
   const atlas = new Image();
   atlas.src = bundle.glyphs.atlas;
-  await Promise.all([
-    atlas.decode(),
-    document.fonts.load('16px "Replay PT Sans"'),
-    document.fonts.load('16px "Replay FZ Hei"'),
-  ]);
+  await atlas.decode();
   return { bundle, plan, atlas, hashGlyphs, callResults };
 }

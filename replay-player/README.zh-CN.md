@@ -23,7 +23,6 @@ record-browser.mjs  录制公开入口
 tools/              数据准备与性能基准工具
 tests/              单元测试与浏览器检查
 grading/            独立标注评分，参见其 README
-legacy/             旧版截图导出器和 HyperFrames 导出器
 
 data/, exports/     已忽略的本地数据和输出
 ```
@@ -44,7 +43,6 @@ data/, exports/     已忽略的本地数据和输出
 首次使用时安装依赖：
 
 ```powershell
-$env:PUPPETEER_SKIP_DOWNLOAD = "true"
 npm --prefix .\replay-player ci
 uv run --isolated --no-project --with imageio-ffmpeg python -c "import imageio_ffmpeg"
 ```
@@ -125,10 +123,4 @@ node .\replay-player\tools\benchmark-player.mjs --output artifacts/player-refact
 性能基准采样游玩初期、需要等待的小游戏、后期字典修改和包含 150 个格子的页面，
 记录更新间隔、长任务、DOM 数量，以及浏览器布局和脚本耗时。
 对比时应使用相同视口和机器负载。
-浏览器检查覆盖历史列表大小限制、历史详情、进度、标注、消息动画、跳转、控制栏和兼容导出 API。
-
-## 历史实验
-
-串行导出器位于 `legacy/export_video.py`，HyperFrames 导出器位于 `legacy/export-hyperframes.mjs`。
-播放器仍支持它们使用的公开 API，但这些基于截图的方式已与正常播放和录制隔离，
-仅保留作对比，不会自动启用。
+浏览器检查覆盖历史列表大小限制、历史详情、进度、标注、消息动画、跳转和控制栏。

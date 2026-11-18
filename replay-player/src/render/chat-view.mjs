@@ -10,7 +10,6 @@ export function createChatView({
   hashGlyphs,
   callResults,
   getBoard,
-  getOfflineExport,
 }) {
   const root = document.querySelector("#chat"),
     scrollRoot = document.querySelector("#conversation-scroll");
@@ -212,11 +211,6 @@ export function createChatView({
       release,
     );
   function requestScroll(smooth = playback.playing) {
-    const offline = getOfflineExport();
-    if (offline) {
-      offline.dom.requestScroll(smooth);
-      return;
-    }
     scrollRequested = true;
     instant ||= !smooth;
   }
@@ -224,7 +218,6 @@ export function createChatView({
     return groups.filter((g) => g.el.open).map((g) => g.list);
   }
   function flushScroll(time = performance.now()) {
-    if (getOfflineExport()) return;
     // All layout reads are batched before scroll writes, and only after content changes.
     if (scrollRequested) {
       const measurements = [...openLists(), scrollRoot].map((el) => ({
@@ -385,12 +378,7 @@ export function createChatView({
     previousTempo = playback.tempo;
   }
   function finishTail() {
-    if (
-      getOfflineExport() ||
-      tail ||
-      !generating.size ||
-      playback.position < playback.duration
-    )
+    if (tail || !generating.size || playback.position < playback.duration)
       return;
     let previous = performance.now();
     const tick = (now) => {
@@ -413,9 +401,7 @@ export function createChatView({
     advanceMessages,
     revealMessages,
     finishTail,
-    requestScroll,
     flushScroll,
-    openLists,
     previewForCall: (call) => tools.get(call)?.result?.querySelector("canvas"),
     get mountedRows() {
       return groups.reduce((sum, g) => sum + g.virtual.mounted.size, 0);

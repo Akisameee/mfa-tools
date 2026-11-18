@@ -4,14 +4,11 @@
   "type": "module",
   "scripts": {
     "record": "node record-browser.mjs",
-    "export:hyperframes": "node legacy/export-hyperframes.mjs",
     "test": "node tests/test-timeline.mjs && node tests/test-speed-plan.mjs && node tests/test-frame-clock.mjs",
     "test:browser": "node tests/browser.mjs",
     "benchmark": "node tools/benchmark-player.mjs"
   },
   "devDependencies": {
-    "@ffprobe-installer/ffprobe": "2.1.2",
-    "hyperframes": "0.9.59",
     "playwright-core": "1.65.1",
     "prettier": "3.6.2"
   }

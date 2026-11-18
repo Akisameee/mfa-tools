@@ -1,8 +1,7 @@
 import { applyEvent, eventTime, indexAt, replayState } from "./timeline.mjs";
 import { TempoMap, DEFAULT_SPEED } from "./tempo.mjs";
 
-// Recorded time remains the playhead. TempoMap changes its rate through each
-// segment; the worker keeps advancing while controls have focus.
+// Recorded time remains the playhead. TempoMap changes its rate through each segment.
 export class Playback {
   constructor(events, clock, plan = null) {
     this.events = events;

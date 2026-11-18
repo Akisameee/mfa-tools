@@ -82,6 +82,9 @@ ERRORS = {
     "ANNOTATION_FIELD_UNAVAILABLE": "No unfocused character annotation field is available",
     "ANNOTATION_TOO_LONG": "Annotation exceeds the game input limit",
     "ANNOTATION_NOT_COMMITTED": "Game did not commit the annotation",
+    "OFF_PAGE_ANNOTATION_FAILED": "Could not complete the annotation while the character is off "
+    "the current page. Open a page where the character appears, check its annotation, and call "
+    "note again if needed.",
     "ANNOTATION_RESTORE_FAILED": "Annotation failed ({cause}); restoring the original text also "
     "failed ({restore})",
     "CHARACTER_UNAVAILABLE": "Character is unavailable",
@@ -132,10 +135,12 @@ def describe_click(result: dict) -> str:
     position = f"({result['row']}, {result['col']})"
     if target and target.get("empty") is True:
         character = render_cell(
-            {"id": "blank", "note": None, "frame": target.get("frame")},
+            None,
             boxed=bool(target.get("boxed")),
+            frame=target.get("frame"),
         )
-        subject = f"{character} at {position}"
+        label = f"{character} (blank)" if character else "blank"
+        subject = f"{label} at {position}"
     elif target:
         character = render_cell(
             target,

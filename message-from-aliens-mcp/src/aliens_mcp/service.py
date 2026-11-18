@@ -6,7 +6,7 @@ import builtins
 import threading
 from typing import Literal
 
-from .errors import ValidationError
+from .errors import GameError, ValidationError
 from .game import GameClient
 from .hashes import GlyphIds
 from .messages import closed_click, unchanged
@@ -14,6 +14,17 @@ from .models import CellStyle, ClickResult
 from .recording import observe_table
 from .rendering.table import build, render
 from .validation import validate_click, validate_hash, validate_note, validate_seconds
+
+
+_ANNOTATION_WRITE_ERRORS = frozenset({
+    "ANNOTATION_FIELD_UNAVAILABLE",
+    "IDENTITY_FIELD_UNAVAILABLE",
+    "ANNOTATION_NOT_COMMITTED",
+    "ANNOTATION_RESTORE_FAILED",
+    "ANNOTATION_LOST",
+    "UNITY_REJECTED",
+    "INTERNAL_ERROR",
+})
 
 
 class GameService:
@@ -62,7 +73,6 @@ class GameService:
         }
 
     def _word_for_hash(self, token: str) -> str:
-        self._snapshot()  # Includes generated characters on the current page.
         word = self._glyph_ids.by_id.get(token)
         if word is None:
             raise ValidationError("UNKNOWN_HASH", hash=token)
@@ -189,7 +199,15 @@ class GameService:
     def note(self, hash: str, text: str) -> dict:
         validate_note(hash, text)
         with self._lock:
-            result = self.client().note(self._word_for_hash(hash), text)
+            client = self.client()
+            page_ids = self._snapshot()["ids"]
+            word = self._word_for_hash(hash)
+            try:
+                result = client.note(word, text)
+            except GameError as error:
+                if word not in page_ids and error.code in _ANNOTATION_WRITE_ERRORS:
+                    raise GameError("OFF_PAGE_ANNOTATION_FAILED") from error
+                raise
             return {"ok": result["ok"], "hash": hash, "text": result["text"]}
 
     def wait(self, seconds: float) -> dict:
@@ -205,6 +223,7 @@ class GameService:
         if format not in ("ascii", "paths", "image"):
             raise ValidationError("INVALID_GLYPH_FORMAT")
         with self._lock:
+            self._snapshot()  # Register generated characters on the current page.
             paths = self.client().glyph(self._word_for_hash(hash))
         if format == "paths":
             return coordinates(paths, hash)

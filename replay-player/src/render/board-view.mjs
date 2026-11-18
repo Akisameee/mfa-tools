@@ -9,7 +9,6 @@ export function createBoardView({
   playback,
   presentation,
   previewForCall,
-  getOfflineExport,
 }) {
   const canvas = document.querySelector("#board"),
     effectsCanvas = document.querySelector("#board-effects");
@@ -72,9 +71,7 @@ export function createBoardView({
 
   function drawBoard() {
     if (!bundle) return;
-    const pixelRatio =
-        (window.devicePixelRatio || 1) *
-        (getOfflineExport()?.pixelRatioScale || 1),
+    const pixelRatio = window.devicePixelRatio || 1,
       w = size.width,
       h = size.height;
     if (

@@ -7,6 +7,7 @@ from unittest.mock import patch
 from support import ServiceTestCase, mock_game, service
 
 from aliens_mcp import tools
+from aliens_mcp.errors import GameError, GameNotRunning
 
 
 class NoteTests(ServiceTestCase):
@@ -69,6 +70,33 @@ class NoteTests(ServiceTestCase):
         with patch.object(service, "client", return_value=runtime):
             with self.assertRaisesRegex(RuntimeError, "Native annotation failed"):
                 tools.note("qrag", "标注")
+
+    def test_off_page_annotation_failures_share_the_same_recovery_message(self):
+        runtime = mock_game()
+        errors = (
+            GameError("ANNOTATION_FIELD_UNAVAILABLE"),
+            GameError("ANNOTATION_RESTORE_FAILED", cause="INTERNAL_ERROR", restore="INTERNAL_ERROR"),
+            GameError("ANNOTATION_LOST"),
+        )
+        with patch.object(service, "client", return_value=runtime):
+            for error in errors:
+                with self.subTest(code=error.code):
+                    runtime.note.side_effect = error
+                    with self.assertRaises(GameError) as caught:
+                        tools.note("qrag", "标注")
+                    self.assertEqual(caught.exception.code, "OFF_PAGE_ANNOTATION_FAILED")
+                    self.assertIs(caught.exception.__cause__, error)
+                    self.assertIn("Open a page where the character appears", str(caught.exception))
+
+            runtime.note.side_effect = GameNotRunning()
+            with self.assertRaises(GameNotRunning):
+                tools.note("qrag", "标注")
+
+            runtime.snapshot.return_value = {"cells": [{"word": "test-character"}]}
+            runtime.note.side_effect = errors[0]
+            with self.assertRaises(GameError) as caught:
+                tools.note("qrag", "标注")
+            self.assertIs(caught.exception, errors[0])
 
     def test_service_resolves_off_page_hash_and_rejects_unknown_before_native_edit(
         self,

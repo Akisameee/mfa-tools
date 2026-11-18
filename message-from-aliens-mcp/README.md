@@ -77,7 +77,7 @@ columns `0..23` run from left to right.
 | `look(type="table", force=False)` | Read the current 9x24 grid with annotations and layout markers. |
 | `look(type="screenshot", force=False)` | Capture the game window as a PNG, with pixel dimensions and window style. |
 | `click(row, col, type="left")` | Click any grid cell, including blank cells, with either mouse button; return the target and outcome. |
-| `note(hash, text)` | Save an annotation for every occurrence of a character, even when it is absent from the current page. |
+| `note(hash, text)` | Save an annotation for every occurrence of a character. Attempts to annotate off-page characters too. |
 | `wait(seconds)` | Advance game time on supported pages, applying normal time updates and saving the result. |
 | `glyph(hash, format="image")` | Inspect a character as a PNG, ASCII art, or coordinate paths. |
 
@@ -127,9 +127,10 @@ and prevents that click from opening a browser. If the game closes, the result
 directs the model to `launch_game()`. The MCP server remains available.
 
 `note(hash, text)` accepts a hash from `look`, updates all occurrences across pages,
-and saves through the game's normal annotation handler. The character does not
-need to remain on the current page. Text must be one line of at most 49 UTF-16
-units. An empty string clears the annotation. Successful results contain
+and saves through the game's normal annotation handler. If an off-page edit
+fails, open a page where the character appears, check its annotation, and retry
+there if needed. Text must be one line of at most 49 UTF-16 units. An empty
+string clears the annotation. Successful results contain
 `ok`, `hash`, and `text`.
 
 ### Advancing game time

@@ -7,7 +7,6 @@ import { createBoardView } from "./render/board-view.mjs";
 import { createProgressView } from "./render/progress-view.mjs";
 import { createChatView } from "./render/chat-view.mjs";
 import { createControlsView } from "./render/controls-view.mjs";
-import { createExportSession } from "./render/export-session.mjs";
 import { createPageLayout } from "./render/page-layout.mjs";
 
 const $ = (selector) => document.querySelector(selector);
@@ -21,17 +20,13 @@ try {
   } = await loadReplay();
   const playback = new Playback(bundle.events, new FrameClock());
   const presentation = new Presentation(bundle.events);
-  let chat,
-    exporter,
-    lastFrame = null;
-  const offline = () => exporter?.current;
+  let chat, lastFrame = null;
   const board = createBoardView({
     bundle,
     atlas,
     playback,
     presentation,
     previewForCall: (call) => chat?.previewForCall(call),
-    getOfflineExport: offline,
   });
   const progress = createProgressView({ bundle, playback });
   createPageLayout({ reflowProgress: progress.reflow });
@@ -42,9 +37,7 @@ try {
     hashGlyphs,
     callResults,
     getBoard: () => board,
-    getOfflineExport: offline,
   });
-  exporter = createExportSession({ bundle, playback, recordingPlan, chat });
   $("#automatic-speed").textContent = recordingPlan.name;
 
   playback.onUpdate = ({ reset = false, first = 1, last = 0 }) => {
@@ -147,8 +140,6 @@ try {
   window.player = {
     seek: (value) => playback.seek(value),
     command,
-    startExport: (options) => exporter.start(options),
-    renderExportFrame: (time) => exporter.frame(time),
     get status() {
       return {
         position: playback.position,
@@ -180,11 +171,6 @@ try {
     },
     bundle,
   };
-  if (window.parent !== window)
-    window.parent.postMessage(
-      { type: "aliens-replay-ready" },
-      window.location.origin,
-    );
 } catch (error) {
   $("#loading").textContent = error.message;
   console.error(error);

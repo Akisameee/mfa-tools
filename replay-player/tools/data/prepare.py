@@ -8,7 +8,6 @@ import json
 import math
 import sqlite3
 from .game_catalog import load_catalog
-from .font_assets import export_fonts
 from grading.store import write_playback_grading
 from datetime import datetime
 from pathlib import Path
@@ -142,7 +141,6 @@ def export_glyphs(keys, assets):
 
 
 def prepare(recording, conversation, assets):
-    export_fonts(assets.parent / "sharedassets0.assets")
     catalog = load_catalog(assets)
     events = read_lines(recording / "events.jsonl")
     first, last = epoch(events[0]["at"]), epoch(events[-1]["at"])

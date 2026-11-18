@@ -26,9 +26,11 @@ message when identical. force=True always returns the complete selected view."""
 
 type='left' (default) or 'right' selects the mouse button.
 Returns the clicked target, outcome, and any special circumstances.""",
-    "note": """Set an annotation for a character, including one not on the current page.
+    "note": """Set or clear a character's annotation.
 
-Applies to all occurrences of that character across pages.
+Attempts to annotate characters even when they are not on the current page.
+If that fails, open a page where the character appears and retry there.
+Saved annotations apply to all occurrences of the character.
 text is one line of at most 49 UTF-16 units; an empty string clears the annotation.""",
     "wait": """Advance game time without actually waiting.
 

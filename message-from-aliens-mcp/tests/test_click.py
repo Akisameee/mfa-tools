@@ -128,7 +128,7 @@ class MCPClickOutputTests(ServiceTestCase):
         from aliens_mcp.server import _describe_click, mcp
 
         async def check():
-            for boxed, label in [(False, "blank"), (True, "[blank]")]:
+            for boxed, label in [(False, "blank"), (True, "[ ] (blank)")]:
                 receipt = {
                     "ok": True,
                     "game_running": True,
@@ -297,24 +297,38 @@ class MCPClickOutputTests(ServiceTestCase):
 
     def test_card_edges_survive_capture_and_match_table_labels(self):
         from aliens_mcp.messages import describe_click
-        from aliens_mcp.rendering.table import render_cell
+        from aliens_mcp.rendering.table import render
 
-        frame = {"top": True, "bottom": False, "left": True, "right": True}
         runtime = mock_game()
-        for raw, label in [
-            ({"word": "private", "note": "卡牌"}, None),
-            ({"empty": True}, "┌blank┐"),
+        col = 14
+        for row, raw in [
+            (7, {"word": "private", "note": "卡牌"}),
+            (8, {"empty": True}),
         ]:
+            frame = {"top": row == 7, "bottom": row == 8, "left": True, "right": True}
             runtime.click.return_value = {
                 "ok": True,
                 "game_running": True,
                 "target": {**raw, "frame": frame},
             }
             with patch.object(service, "client", return_value=runtime):
-                receipt = tools.click(7, 14)
+                receipt = tools.click(row, col)
             self.assertEqual(receipt["target"]["frame"], frame)
-            expected = label or render_cell(receipt["target"])
-            self.assertIn(expected, describe_click(receipt))
+            cells = [] if raw.get("empty") else [
+                {**receipt["target"], "row": row, "col": col}
+            ]
+            table = render(
+                {"rows": 9, "cols": 24, "cells": cells, "frames": [[7, col, 8, col]]}
+            )
+            line = next(
+                line for line in table.splitlines() if line.startswith(f"| {row} |")
+            )
+            expected = line.split("|")[col + 2].strip()
+            suffix = " (blank)" if raw.get("empty") else ""
+            self.assertEqual(
+                describe_click(receipt),
+                f"Clicked {expected}{suffix} at ({row}, {col}) with the left mouse button.",
+            )
             self.assertNotIn("private", describe_click(receipt))
 
 

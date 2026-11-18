@@ -69,7 +69,7 @@ uv tool install message-from-aliens-mcp
 | `look(type="table", force=False)` | 读取当前 9×24 网格，包含标注和布局标记。 |
 | `look(type="screenshot", force=False)` | 获取游戏窗口的 PNG 截图，附带像素尺寸和窗口样式信息。 |
 | `click(row, col, type="left")` | 使用左键或右键点击任意格子（包括空白），返回目标和结果。 |
-| `note(hash, text)` | 为字符的所有出现位置保存标注；字符无需出现在当前页面。 |
+| `note(hash, text)` | 为字符的所有出现位置保存标注，也会尝试标注不在当前页的字符。 |
 | `wait(seconds)` | 在支持的页面推进游戏时间，执行正常的时间更新并保存结果。 |
 | `glyph(hash, format="image")` | 以 PNG、ASCII 字符画或坐标路径查看字形。 |
 
@@ -107,7 +107,8 @@ uv tool install message-from-aliens-mcp
 如果游戏关闭，结果会指引模型调用 `launch_game()`；MCP 服务本身仍然可用。
 
 `note(hash, text)` 接受来自 `look` 的 hash，更新该字符在所有页面的标注，
-并通过游戏原有的标注处理流程保存。字符无需仍在当前页面。
+并通过游戏原有的标注处理流程保存。如果跨页标注失败，请打开字符出现的页面，
+检查现有标注，必要时在该页重试。
 文字须为单行，长度不超过 49 个 UTF-16 单位。空字符串会清除标注。
 成功结果包含 `ok`、`hash` 和 `text`。
 

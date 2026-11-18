@@ -23,7 +23,6 @@ record-browser.mjs  public recording entry point
 tools/              data preparation and performance benchmark
 tests/              unit and browser checks
 grading/            independent annotation scoring; see its README
-legacy/             previous screenshot/HyperFrames exporters
 data/, exports/     ignored local data and output
 ```
 
@@ -43,7 +42,6 @@ Preparation is unnecessary when `data/replay.json` already exists.
 Install dependencies once:
 
 ```powershell
-$env:PUPPETEER_SKIP_DOWNLOAD = "true"
 npm --prefix .\replay-player ci
 uv run --isolated --no-project --with imageio-ffmpeg python -c "import imageio_ffmpeg"
 ```
@@ -137,11 +135,4 @@ The benchmark samples early play, the waiting game, late dictionary work, and a
 150-cell page. It records update intervals, long tasks, DOM counts, and browser
 layout/script costs. Compare at the same viewport and machine load.
 Browser checks verify bounded history, historical details, progress, notes,
-message animation, seeking, controls, and the compatibility export API.
-
-## Legacy experiments
-
-The serial exporter is at `legacy/export_video.py`; HyperFrames is at
-`legacy/export-hyperframes.mjs`. Their public player APIs remain supported, but
-these screenshot-based paths are isolated from normal playback and recording.
-They are retained for comparison, not selected automatically.
+message animation, seeking, and controls.

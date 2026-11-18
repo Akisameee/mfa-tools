@@ -137,17 +137,9 @@ try {
   });
   await page.screenshot({ path: path.join(artifacts, "dense-page.png") });
 
-  // Keep the serial export API functional, independent of live frame pacing.
-  const exportInfo = await page.evaluate(() => player.startExport());
-  assert(exportInfo.duration > 0);
-  await page.evaluate(() => {
-    player.renderExportFrame(0);
-    player.renderExportFrame(1000);
-  });
-  assert((await page.locator(".user-message:visible").count()) === 1);
   assert.deepEqual(errors, []);
   console.log(
-    "Browser: message animation/pause, seeking, progress, bounded rows, history/details, rec speeds, note and export API passed",
+    "Browser: message animation/pause, seeking, progress, bounded rows, history/details, rec speeds and note passed",
   );
 } finally {
   await browser.close();

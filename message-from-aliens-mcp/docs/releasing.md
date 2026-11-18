@@ -41,7 +41,8 @@ Use a new version for every new PyPI release.
 
 ```powershell
 uv build --no-sources
-uvx twine check dist/message_from_aliens_mcp-0.1.10*
+$version = "0.1.11"
+uvx twine check "dist/message_from_aliens_mcp-${version}-py3-none-any.whl" "dist/message_from_aliens_mcp-${version}.tar.gz"
 ```
 
 Inspect both the wheel and source archive before publishing. The wheel must
@@ -53,7 +54,7 @@ Confirm the wheel metadata and README contain no placeholders or private paths.
 Test the actual wheel with both executable names:
 
 ```powershell
-$releaseWheel = (Resolve-Path dist/message_from_aliens_mcp-0.1.10-py3-none-any.whl).Path
+$releaseWheel = (Resolve-Path "dist/message_from_aliens_mcp-${version}-py3-none-any.whl").Path
 uvx --from $releaseWheel message-from-aliens-mcp --help
 uvx --from $releaseWheel aliens-mcp --help
 ```
@@ -93,13 +94,13 @@ can use PyPI Trusted Publishing instead.
 After the local checks, upload only the intended version:
 
 ```powershell
-uv publish dist/message_from_aliens_mcp-0.1.10*
+uv publish "dist/message_from_aliens_mcp-${version}-py3-none-any.whl" "dist/message_from_aliens_mcp-${version}.tar.gz"
 ```
 
 Then verify the public installation independently of the source checkout:
 
 ```powershell
-uvx message-from-aliens-mcp==0.1.10 --help
+uvx "message-from-aliens-mcp==${version}" --help
 ```
 
 See the official [uv publishing guide](https://docs.astral.sh/uv/guides/package/)

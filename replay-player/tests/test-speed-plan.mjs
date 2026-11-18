@@ -3,7 +3,6 @@ import { resolveSpeedPlan } from "../src/core/speed-plan.mjs";
 import { TempoMap, animationDuration } from "../src/core/tempo.mjs";
 import { Playback } from "../src/core/playback.mjs";
 import { messageDuration } from "../src/core/motion.mjs";
-import { ExportDom } from "../src/render/export-dom.mjs";
 
 const events = [
   { kind: "message", role: "user", text: "开始", time: 0 },
@@ -102,7 +101,7 @@ playback.setPlan(plan);
 assert.equal(playback.speed, 4);
 playback.rewind();
 assert.equal(playback.speed, 1);
-// Offline advancement delivers events incrementally, with no seek/reset.
+// Clock ticks deliver events incrementally, with no seek/reset.
 const manual = new Playback(events, { postMessage() {} }, plan);
 const updates = [];
 manual.onUpdate = (update) => updates.push(update);
@@ -113,30 +112,6 @@ assert.equal(manual.cursor, 2);
 assert(updates.every((update) => update.reset === false));
 assert.throws(() => manual.advanceTo(1000));
 
-// CSS/WAAPI animation and scrolling advance only on explicitly supplied time.
-const animation = {
-  paused: false,
-  pause() {
-    this.paused = true;
-  },
-  effect: { getComputedTiming: () => ({ endTime: 650 }) },
-};
-const dom = new ExportDom({ getAnimations: () => [animation] });
-const scroller = { scrollHeight: 500, clientHeight: 100, scrollTop: 0 };
-dom.render(100, [scroller]);
-assert.equal(animation.currentTime, 0);
-assert(animation.paused);
-dom.render(210, [scroller]);
-assert.equal(animation.currentTime, 110);
-assert.equal(scroller.scrollTop, 200);
-dom.render(320, [scroller]);
-assert.equal(scroller.scrollTop, 400);
-dom.render(1000, [scroller]);
-assert.equal(animation.currentTime, 650);
-scroller.scrollHeight = 700;
-dom.requestScroll(false);
-dom.render(1010, [scroller]);
-assert.equal(scroller.scrollTop, 600);
 console.log(
   "Speed plan: message triggers, fixed animations, compaction, inverse mapping, rewind and manual override passed",
 );

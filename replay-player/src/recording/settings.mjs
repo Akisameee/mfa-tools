@@ -87,7 +87,7 @@ export async function loadRecordingSettings() {
     );
     if (found.status !== 0)
       throw Error(
-        "FFmpeg not found. Set FFMPEG_PATH or run the Python exporter's dependency setup.",
+        "FFmpeg not found. Set FFMPEG_PATH or cache imageio-ffmpeg with uv as described in the README.",
       );
     ffmpeg = found.stdout.trim();
   }

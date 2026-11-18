@@ -3,7 +3,7 @@
 ### Automatic recording speeds
 
 Open the regular player and select `rec` in the speed dropdown for the fixed
-schedule in [`recording-plan.json`](recording-plan.json). The configuration loads
+schedule in [`recording-plan.json`](../recording-plan.json). The configuration loads
 directly on page load; its `name` field supplies the dropdown label. No special
 URL or separate page is needed. The player opens paused, ready for OBS.
 For recording `1115`, thinking starts at 1×, changes to 8× after the first assistant
@@ -55,8 +55,9 @@ interruptions are retained. Playback opens paused at time zero, before the first
 event. Pressing play sends the initial user message with the same progressive
 reveal as later user and assistant messages. Home and replay after the end
 return to this point; no message or game state is prefilled.
-The playback clock runs in a Worker, so switching tabs
-does not pause it. Browser suspension or closing the capture page stops execution.
+The playback clock uses `requestAnimationFrame` and measures elapsed time from
+an anchor. When a tab is throttled, fewer frames are drawn; the next frame uses
+the elapsed time to catch up.
 The top-right timer is the recording playhead and advances continuously while
 playing, including during tool execution. Only thinking/waiting between calls
 uses the selected speed. Every tool call has a fixed screen duration independent
@@ -128,20 +129,13 @@ are left unchanged. Glyph extraction reads both `resources.assets` and
 fallback keys are listed in `data/glyphs.json`; both asset files participate in
 the atlas cache fingerprint.
 
-Preparation also extracts PT Sans Regular and FangZhengHeiTi-GBK-1 from
-`sharedassets0.assets` beside the selected resource file. To extract only fonts:
-
-```powershell
-uv run --isolated --no-project --with UnityPy python .\replay-player\font_assets.py
-```
-
 Generated `data/` contains local game assets and conversation text and is ignored
 by version control. The player itself subsequently needs only Python's standard
 HTTP server and a browser. Prepared glyphs are cached against the asset hash.
 
 ## Grade annotations
 
-See [grading/README.md](grading/README.md) for API key, Base URL, model settings,
+See [grading/README.md](../grading/README.md) for API key, Base URL, model settings,
 offline extraction, cached evaluation, and automatic playback integration.
 Scores live under each recording's `grading/` directory; the original event and
 snapshot files remain unchanged.
@@ -160,9 +154,8 @@ the original English key, dictionary definition, numeric value, and score reason
   recording does not contain LineRenderer endpoints or visibility flags.
   Game frames use exact cell edges; shared edges are merged. Consecutive
   underlines reach each cell's full width, with no artificial gaps.
-  Board annotations and player text use the game's embedded PT Sans Regular,
-  with FangZhengHeiTi-GBK-1 (FZHei-B01) for Chinese. Both fonts load locally before
-  the first game frame is drawn. Japanese font handling is unchanged.
+  Board annotations and player text use the system font stack (Microsoft YaHei
+  where available, with a sans-serif fallback).
   Alien glyphs come from sprites.
   Notes start at 0.28 board units (about 16px in a 1920px capture), keeping short
   annotations on one line. Longer annotations wrap and shrink only as needed.

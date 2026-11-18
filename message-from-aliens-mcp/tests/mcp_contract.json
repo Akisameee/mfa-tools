@@ -67,7 +67,7 @@
     },
     {
       "name": "note",
-      "description": "Set an annotation for a character, including one not on the current page.\n\n    Applies to all occurrences of that character across pages.\n    text is one line of at most 49 UTF-16 units; an empty string clears the annotation.\n    ",
+      "description": "Set or clear a character's annotation.\n\n    Attempts to annotate characters even when they are not on the current page.\n    If that fails, open a page where the character appears and retry there.\n    Saved annotations apply to all occurrences of the character.\n    text is one line of at most 49 UTF-16 units; an empty string clears the annotation.\n    ",
       "inputSchema": {
         "properties": {
           "hash": {
